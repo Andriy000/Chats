@@ -14,35 +14,29 @@ export const sendMessage = async (req, res) => {
 
     let chat;
 
-    // Шукаємо всі чати між відправником і отримувачем
     const existingChats = await Chat.find({
       participants: { $all: [senderId, receiverId] },
     });
 
     if (existingChats.length > 1) {
-      // Якщо існує більше одного чату, перевіряємо, чи надано chatId
       if (!chatId) {
         return res.status(400).json({ error: ERROR.CHAT_ID_REQUIRED });
       }
 
-      // Перевіряємо, чи наданий chatId існує в базі
       chat = existingChats.find(chat => chat._id.toString() === chatId);
       if (!chat) {
         return res.status(404).json({ error: ERROR.CHAT_NOT_FOUND });
       }
     } else if (existingChats.length === 1) {
-      // Якщо є тільки один чат, використовуємо його
       chat = existingChats[0];
     } else {
-      // Якщо чатів не існує, створюємо новий
       chat = new Chat({
         participants: [senderId, receiverId],
-        owner: senderId, // або інша логіка визначення власника чату
+        owner: senderId, 
       });
       await chat.save();
     }
-
-    // Створюємо нове повідомлення
+    
     const newMessage = new Message({
       senderId,
       receiverId,

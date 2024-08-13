@@ -108,7 +108,7 @@ export const createChat = async (req, res) => {
 export const deleteChat = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { chatId } = req.params; // Отримання chatId з параметрів URL
+    const { chatId } = req.params;
 
     const chat = await Chat.findById(chatId);
     if (!chat) {
@@ -180,6 +180,37 @@ export const getUsersChat = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.log("Error in getUsersChat controller", error.message);
+    res.status(500).json({ error: ERROR.INTERNAL_SERVER });
+  }
+};
+
+export const leaveChat = async (req, res) => {
+  try {
+
+    const { chatId } = req.params;
+    const userId = req.user._id;
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res.status(404).json({ error: ERROR.CHAT_NOT_FOUND });
+    }
+    if (!chat.participants.some((participant) => participant.equals(userId))) {
+      return res.status(404).json({ error: ERROR.USER_NOT_FOUND });
+    }
+
+    chat.participants = chat.participants.filter(
+      (participant) => !participant.equals(userId)
+    );
+
+    if (chat.participants.length === 0) {
+      await Chat.findByIdAndDelete(chatId);
+    } else {
+      await chat.save();
+    }
+
+    res.status(200).json({ message: 'Left chat successfully' });
+  } catch (error) {
+    console.log('Error in leaveChat controller', error.message);
     res.status(500).json({ error: ERROR.INTERNAL_SERVER });
   }
 };

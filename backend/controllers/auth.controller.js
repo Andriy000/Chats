@@ -2,6 +2,7 @@ import { ERROR, AUTHORIZATION } from "../constants/constant.js";
 import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/generateTokenAndSetCookie.js";
 import User from "../models/user.model.js";
+import Chat from "../models/chat.model.js";
 
 export const signup = async (req, res) => {
   try {
@@ -63,7 +64,6 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
 
-
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -98,3 +98,4 @@ export const logout = (req, res) => {
      res.status(500).json({ error: ERROR.INTERNAL_SERVER });
   }
 }
+
