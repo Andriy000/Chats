@@ -1,21 +1,20 @@
 import express from "express"
-import cookieParser from "cookie-parser";
-import authRoutes from "./routes/auth.routes.js";
-import messageRoutes from "./routes/message.routes.js";
-import chatRoutes from "./routes/chat.routes.js";
-//import chatRoutes from "./routes/chat.routes.js"
+import cors from "cors"
+import productRoutes from "./routes/product.routes.js";
+import commentRoutes from "./routes/comment.routes.js"
 import connectToMongoDB from "./db/conectToMongo.js";
 
 const app = express();
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  methods: ['GET', 'POST'],
+  credentials: false,
+}));
 
-const PORT =  5000;
+const PORT =  8000;
 app.use(express.json());
-app.use(cookieParser());
-app.use("/api/auth", authRoutes);
-app.use("/api/chat", chatRoutes)
-app.use("/api/message", messageRoutes);
-//app.use("/api/chat", chatRoutes);
-//to parse data from JSON payloads like Auth from  req.body
+app.use("/api/product", commentRoutes)
+app.use("/api/product", productRoutes);
 
 app.get("/", (req, res) => {
   res.send("hello world!");
